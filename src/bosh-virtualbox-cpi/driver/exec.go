@@ -35,7 +35,11 @@ func NewExecDriver(runner Runner, retrier Retrier, binPath string, logger boshlo
 }
 
 func (d ExecDriver) Execute(args ...string) (string, error) {
-	return d.ExecuteComplex(args, ExecuteOpts{})
+	output, error := d.ExecuteComplex(args, ExecuteOpts{})
+	if strings.HasPrefix(output, "WARNING:") { // cut the first WARNING line if present
+		output = output[len(strings.Split(output, "\n")[0]):]
+	}
+	return output, error
 }
 
 func (d ExecDriver) ExecuteComplex(args []string, opts ExecuteOpts) (string, error) {
